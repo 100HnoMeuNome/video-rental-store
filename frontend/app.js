@@ -1,5 +1,6 @@
 // API Configuration
-const API_URL = 'http://localhost:5000';
+// Use empty string to make requests to the same host (nginx will proxy to backend)
+const API_URL = '';
 
 // Check authentication status
 function checkAuth() {

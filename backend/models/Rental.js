@@ -13,7 +13,8 @@ const rentalSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['rent', 'buy'],
+    enum: ['rent'],
+    default: 'rent',
     required: true
   },
   price: {

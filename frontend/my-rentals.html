@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Rentals - Video Rental Store</title>
+    <title>My Rentals - Insecure Rental</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <h1><a href="index.html">Video Rental Store</a></h1>
+            <h1><a href="index.html">Insecure Rental</a></h1>
             <div id="userNav">
                 <span id="usernameDisplay"></span>
                 <a href="my-rentals.html">My Rentals</a>
@@ -19,7 +19,7 @@
     </nav>
 
     <div class="container">
-        <h2>My Rentals and Purchases</h2>
+        <h2>My Rentals</h2>
         <div id="rentalsList"></div>
     </div>
 
@@ -57,14 +57,14 @@
             const container = document.getElementById('rentalsList');
 
             if (rentals.length === 0) {
-                container.innerHTML = '<p>You have no rentals or purchases yet.</p>';
+                container.innerHTML = '<p>You have no rentals yet.</p>';
                 return;
             }
 
             container.innerHTML = rentals.map(rental => `
                 <div class="rental-card">
                     <h3>${rental.movie.title}</h3>
-                    <p><strong>Type:</strong> ${rental.type === 'rent' ? 'Rental' : 'Purchase'}</p>
+                    <p><strong>Type:</strong> Rental</p>
                     <p><strong>Price:</strong> $${rental.price.toFixed(2)}</p>
                     <p><strong>Date:</strong> ${new Date(rental.rentalDate).toLocaleDateString()}</p>
 

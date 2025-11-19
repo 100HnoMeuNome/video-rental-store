@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
+  itemType: {
+    type: String,
+    enum: ['movies', 'airplanes', 'cars'],
+    default: 'movies',
+    required: true
+  },
   title: {
     type: String,
     required: true,
@@ -14,17 +20,18 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  // Movie-specific fields
   releaseYear: {
     type: Number,
-    required: true
+    required: function() { return this.itemType === 'movies'; }
   },
   director: {
     type: String,
-    required: true
+    required: function() { return this.itemType === 'movies'; }
   },
   duration: {
     type: Number, // in minutes
-    required: true
+    required: function() { return this.itemType === 'movies'; }
   },
   rating: {
     type: Number,
@@ -32,6 +39,20 @@ const movieSchema = new mongoose.Schema({
     max: 10,
     default: 0
   },
+  // Airplane/Car specific fields
+  manufacturer: {
+    type: String,
+    required: function() { return this.itemType !== 'movies'; }
+  },
+  model: {
+    type: String,
+    required: function() { return this.itemType !== 'movies'; }
+  },
+  year: {
+    type: Number,
+    required: function() { return this.itemType !== 'movies'; }
+  },
+  // Common fields
   posterUrl: {
     type: String,
     default: ''
@@ -41,11 +62,6 @@ const movieSchema = new mongoose.Schema({
       type: Number,
       required: true,
       default: 2.99
-    },
-    buy: {
-      type: Number,
-      required: true,
-      default: 9.99
     }
   },
   stock: {

@@ -1,7 +1,7 @@
 {
-  "name": "video-rental-backend",
-  "version": "1.0.0",
-  "description": "Video rental store backend API",
+  "name": "insecure-rental-backend",
+  "version": "2.0.0",
+  "description": "Insecure Rental - Intentionally vulnerable backend API for security education",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

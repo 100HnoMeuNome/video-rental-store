@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Rental Store</title>
+    <title>Insecure Rental - Movies, Airplanes & Cars</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <h1><a href="index.html">Video Rental Store</a></h1>
+            <h1><a href="index.html">Insecure Rental</a></h1>
             <div class="nav-menu">
                 <a href="index.html" class="active">Home</a>
-                <a href="rent.html">Rent</a>
-                <a href="buy.html">Buy</a>
+                <a href="rent.html">Rent Movies</a>
             </div>
             <div id="navLinks">
                 <a href="login.html">Login</a>
@@ -29,22 +28,30 @@
 
     <div class="container">
         <div class="hero-section">
-            <h1>Welcome to Video Rental Store</h1>
-            <p class="hero-subtitle">Rent DVDs or buy digital movies - Your choice, your way!</p>
+            <h1>Welcome to Insecure Rental</h1>
+            <p class="hero-subtitle">Rent movies, airplanes, and cars - All through one insecure platform!</p>
+            <p class="warning-banner">⚠️ WARNING: This site is intentionally insecure for educational purposes</p>
 
             <div class="cta-buttons">
-                <a href="rent.html" class="cta-button rent-cta">
-                    <span class="cta-icon">📀</span>
+                <a href="rent.html?type=movies" class="cta-button rent-cta">
+                    <span class="cta-icon">🎬</span>
                     <h3>Rent Movies</h3>
                     <p>Physical DVD rentals delivered to your door</p>
                     <span class="cta-price">From $2.99 for 7 days</span>
                 </a>
 
-                <a href="buy.html" class="cta-button buy-cta">
-                    <span class="cta-icon">💎</span>
-                    <h3>Buy Movies</h3>
-                    <p>Digital HD movies with lifetime access</p>
-                    <span class="cta-price">From $9.99 to own forever</span>
+                <a href="rent.html?type=airplanes" class="cta-button airplane-cta">
+                    <span class="cta-icon">✈️</span>
+                    <h3>Rent Airplanes</h3>
+                    <p>Private jets and aircraft rentals</p>
+                    <span class="cta-price">From $5,999 per day</span>
+                </a>
+
+                <a href="rent.html?type=cars" class="cta-button car-cta">
+                    <span class="cta-icon">🚗</span>
+                    <h3>Rent Cars</h3>
+                    <p>Luxury and economy vehicles</p>
+                    <span class="cta-price">From $49 per day</span>
                 </a>
             </div>
         </div>

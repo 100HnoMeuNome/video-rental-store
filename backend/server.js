@@ -35,9 +35,27 @@ app.get('/health', (req, res) => {
 });
 
 // Warning banner on startup
-console.log('\n⚠️  WARNING: Vulnerable endpoints are enabled at /api/vulnerable');
-console.log('   These contain intentional security flaws for testing purposes');
-console.log('   Visit /api/vulnerable/test-vulnerable for details\n');
+console.log('\n═══════════════════════════════════════════════════════════════════');
+console.log('⚠️  INSECURE RENTAL - INTENTIONALLY VULNERABLE APPLICATION');
+console.log('═══════════════════════════════════════════════════════════════════');
+console.log('');
+console.log('  ALL VULNERABILITIES ARE IN THE MAIN API - NOT SEPARATE ENDPOINTS!');
+console.log('  This application contains 17+ INTENTIONAL security vulnerabilities');
+console.log('  built into /api/auth, /api/movies, and /api/rentals endpoints.');
+console.log('');
+console.log('  ❌ DO NOT USE IN PRODUCTION');
+console.log('  ❌ DO NOT DEPLOY TO PUBLIC INTERNET');
+console.log('  ✅ Use for learning and security testing only');
+console.log('');
+console.log('  📋 Vulnerable Endpoints:');
+console.log('     • /api/auth/* - NoSQL injection, no password validation, IDOR');
+console.log('     • /api/movies/* - XSS, JS injection, mass assignment');
+console.log('     • /api/rentals/* - IDOR, payment data exposure, no auth');
+console.log('');
+console.log('  📖 Complete exploit guide: API_VULNERABILITIES.md');
+console.log('  📚 Documentation: README.md');
+console.log('');
+console.log('═══════════════════════════════════════════════════════════════════\n');
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

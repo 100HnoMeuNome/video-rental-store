@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rent Movies - Video Rental Store</title>
+    <title>Rent - Insecure Rental</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <h1><a href="index.html">Video Rental Store</a></h1>
+            <h1><a href="index.html">Insecure Rental</a></h1>
             <div class="nav-menu">
                 <a href="index.html">Home</a>
                 <a href="rent.html" class="active">Rent</a>
-                <a href="buy.html">Buy</a>
             </div>
             <div id="navLinks">
                 <a href="login.html">Login</a>
@@ -29,23 +28,22 @@
 
     <div class="container">
         <div class="page-header">
-            <h1>Rent Movies</h1>
-            <p class="subtitle">Browse our collection of movies available for rental</p>
+            <h1 id="pageTitle">Rent Items</h1>
+            <p class="subtitle" id="pageSubtitle">Browse our collection</p>
+        </div>
+
+        <div class="type-selector">
+            <button onclick="loadItemsByType('movies')" id="btnMovies" class="type-btn active">🎬 Movies</button>
+            <button onclick="loadItemsByType('airplanes')" id="btnAirplanes" class="type-btn">✈️ Airplanes</button>
+            <button onclick="loadItemsByType('cars')" id="btnCars" class="type-btn">🚗 Cars</button>
         </div>
 
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="Search movies...">
-            <select id="genreFilter">
-                <option value="">All Genres</option>
-                <option value="Action">Action</option>
-                <option value="Comedy">Comedy</option>
-                <option value="Drama">Drama</option>
-                <option value="Horror">Horror</option>
-                <option value="Sci-Fi">Sci-Fi</option>
-                <option value="Romance">Romance</option>
-                <option value="Thriller">Thriller</option>
+            <input type="text" id="searchInput" placeholder="Search...">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
             </select>
-            <button onclick="searchMovies()">Search</button>
+            <button onclick="searchItems()">Search</button>
         </div>
 
         <div class="rental-info-banner">
@@ -63,81 +61,128 @@
 
     <script src="app.js"></script>
     <script>
-        // Check if user is logged in
+        let currentType = 'movies';
         checkAuth();
-        loadMoviesForRent();
 
-        function searchMovies() {
-            const search = document.getElementById('searchInput').value;
-            const genre = document.getElementById('genreFilter').value;
-            loadMoviesForRent(search, genre);
+        // Check URL parameters on load
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeParam = urlParams.get('type');
+        if (typeParam) {
+            loadItemsByType(typeParam);
+        } else {
+            loadItemsByType('movies');
         }
 
-        async function loadMoviesForRent(search = '', genre = '') {
+        function loadItemsByType(type) {
+            currentType = type;
+
+            // Update active button
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+
+            // Update page title
+            const titles = {
+                movies: { title: 'Rent Movies', subtitle: 'Browse our DVD collection' },
+                airplanes: { title: 'Rent Airplanes', subtitle: 'Private jets and aircraft' },
+                cars: { title: 'Rent Cars', subtitle: 'Luxury and economy vehicles' }
+            };
+            document.getElementById('pageTitle').textContent = titles[type].title;
+            document.getElementById('pageSubtitle').textContent = titles[type].subtitle;
+
+            // Update category filter
+            updateCategoryFilter(type);
+
+            // Load items
+            searchItems();
+        }
+
+        function updateCategoryFilter(type) {
+            const filter = document.getElementById('categoryFilter');
+            const categories = {
+                movies: ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Thriller'],
+                airplanes: ['Private Jet', 'Helicopter', 'Light Aircraft', 'Commercial'],
+                cars: ['Sedan', 'SUV', 'Sports', 'Luxury', 'Economy']
+            };
+
+            filter.innerHTML = '<option value="">All Categories</option>' +
+                categories[type].map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        function searchItems() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            loadItems(search, category);
+        }
+
+        async function loadItems(search = '', category = '') {
             try {
-                let url = `${API_URL}/api/movies?`;
+                let url = `${API_URL}/api/movies?type=${currentType}&`;
                 if (search) url += `search=${encodeURIComponent(search)}&`;
-                if (genre) url += `genre=${encodeURIComponent(genre)}&`;
+                if (category) url += `genre=${encodeURIComponent(category)}&`;
 
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if (response.ok) {
-                    displayRentMovies(data.movies);
+                    displayItems(data.movies || data.items);
                 } else {
-                    document.getElementById('moviesList').innerHTML = '<p class="error">Error loading movies</p>';
+                    document.getElementById('moviesList').innerHTML = '<p class="error">Error loading items</p>';
                 }
             } catch (error) {
                 document.getElementById('moviesList').innerHTML = '<p class="error">Error connecting to server</p>';
             }
         }
 
-        function displayRentMovies(movies) {
+        function displayItems(items) {
             const container = document.getElementById('moviesList');
 
-            if (movies.length === 0) {
-                container.innerHTML = '<p>No movies found.</p>';
+            if (items.length === 0) {
+                container.innerHTML = '<p>No items found.</p>';
                 return;
             }
 
-            container.innerHTML = movies.map(movie => `
-                <div class="movie-card rent-card">
-                    ${movie.posterUrl ? `<img src="${movie.posterUrl}" alt="${movie.title}">` : '<div class="no-poster">No Image</div>'}
-                    <div class="rent-badge">FOR RENT</div>
-                    <h3>${movie.title}</h3>
-                    <p class="genre">${movie.genre} | ${movie.releaseYear}</p>
-                    <p class="description">${movie.description.substring(0, 100)}...</p>
-                    <p class="director"><strong>Director:</strong> ${movie.director}</p>
-                    <p class="duration"><strong>Duration:</strong> ${movie.duration} min</p>
-                    <p class="rating"><strong>Rating:</strong> ${movie.rating}/10</p>
-                    <div class="pricing">
-                        <span class="price-label">Rental Price:</span>
-                        <span class="price-amount">$${movie.pricing.rent.toFixed(2)}</span>
-                        <span class="price-period">for 7 days</span>
+            container.innerHTML = items.map(item => {
+                const priceLabel = currentType === 'movies' ? 'for 7 days' : 'per day';
+                return `
+                    <div class="movie-card rent-card">
+                        ${item.posterUrl ? `<img src="${item.posterUrl}" alt="${item.title}">` : '<div class="no-poster">No Image</div>'}
+                        <div class="rent-badge">FOR RENT</div>
+                        <h3>${item.title}</h3>
+                        <p class="genre">${item.genre} ${item.releaseYear ? '| ' + item.releaseYear : ''}</p>
+                        <p class="description">${item.description.substring(0, 100)}...</p>
+                        ${item.director ? `<p class="director"><strong>Director:</strong> ${item.director}</p>` : ''}
+                        ${item.duration ? `<p class="duration"><strong>Duration:</strong> ${item.duration} min</p>` : ''}
+                        ${item.rating ? `<p class="rating"><strong>Rating:</strong> ${item.rating}/10</p>` : ''}
+                        ${item.manufacturer ? `<p class="manufacturer"><strong>Manufacturer:</strong> ${item.manufacturer}</p>` : ''}
+                        ${item.model ? `<p class="model"><strong>Model:</strong> ${item.model}</p>` : ''}
+                        <div class="pricing">
+                            <span class="price-label">Rental Price:</span>
+                            <span class="price-amount">$${item.pricing.rent.toFixed(2)}</span>
+                            <span class="price-period">${priceLabel}</span>
+                        </div>
+                        <p class="stock ${item.stock.available === 0 ? 'out-of-stock' : ''}">
+                            <strong>Available:</strong> ${item.stock.available} / ${item.stock.total}
+                        </p>
+                        <button onclick="rentItem('${item._id}', ${item.pricing.rent})"
+                                class="btn-rent"
+                                ${item.stock.available === 0 ? 'disabled' : ''}>
+                            ${item.stock.available === 0 ? 'Out of Stock' : 'Rent Now'}
+                        </button>
                     </div>
-                    <p class="stock ${movie.stock.available === 0 ? 'out-of-stock' : ''}">
-                        <strong>Available:</strong> ${movie.stock.available} / ${movie.stock.total}
-                    </p>
-                    <button onclick="rentMovie('${movie._id}', ${movie.pricing.rent})"
-                            class="btn-rent"
-                            ${movie.stock.available === 0 ? 'disabled' : ''}>
-                        ${movie.stock.available === 0 ? 'Out of Stock' : 'Rent Now'}
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function rentMovie(movieId, price) {
+        function rentItem(itemId, price) {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                alert('Please login to rent movies');
+                alert('Please login to rent items');
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Redirect to rent checkout page
-            window.location.href = `rent-checkout.html?movieId=${movieId}`;
+            window.location.href = `rent-checkout.html?movieId=${itemId}`;
         }
     </script>
 </body>
