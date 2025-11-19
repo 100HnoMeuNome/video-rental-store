@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Rental Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1><a href="index.html">Video Rental Store</a></h1>
+            <div class="nav-menu">
+                <a href="index.html" class="active">Home</a>
+                <a href="rent.html">Rent</a>
+                <a href="buy.html">Buy</a>
+            </div>
+            <div id="navLinks">
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </div>
+            <div id="userNav" style="display: none;">
+                <span id="usernameDisplay"></span>
+                <a href="my-rentals.html">My Rentals</a>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1>Welcome to Video Rental Store</h1>
+            <p class="hero-subtitle">Rent DVDs or buy digital movies - Your choice, your way!</p>
+
+            <div class="cta-buttons">
+                <a href="rent.html" class="cta-button rent-cta">
+                    <span class="cta-icon">📀</span>
+                    <h3>Rent Movies</h3>
+                    <p>Physical DVD rentals delivered to your door</p>
+                    <span class="cta-price">From $2.99 for 7 days</span>
+                </a>
+
+                <a href="buy.html" class="cta-button buy-cta">
+                    <span class="cta-icon">💎</span>
+                    <h3>Buy Movies</h3>
+                    <p>Digital HD movies with lifetime access</p>
+                    <span class="cta-price">From $9.99 to own forever</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2>Why Choose Us?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🚚 Free Shipping</h3>
+                    <p>All rentals include free shipping both ways</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 Instant Access</h3>
+                    <p>Digital purchases available immediately</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎬 Huge Library</h3>
+                    <p>Thousands of movies across all genres</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💳 Secure Payment</h3>
+                    <p>Your payment information is safe with us</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="browse-section">
+            <h2>Browse All Movies</h2>
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="Search movies...">
+                <select id="genreFilter">
+                    <option value="">All Genres</option>
+                    <option value="Action">Action</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Sci-Fi">Sci-Fi</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Thriller">Thriller</option>
+                </select>
+                <button onclick="searchMovies()">Search</button>
+            </div>
+
+            <div id="moviesList" class="movies-grid"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check if user is logged in
+        checkAuth();
+        loadMovies();
+
+        function searchMovies() {
+            const search = document.getElementById('searchInput').value;
+            const genre = document.getElementById('genreFilter').value;
+            loadMovies(search, genre);
+        }
+    </script>
+</body>
+</html>

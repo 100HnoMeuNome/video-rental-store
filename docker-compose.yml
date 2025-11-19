@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongo:
+    image: mongo:7
+    container_name: video-rental-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=video-rental
+    networks:
+      - video-rental-network
+
+  # Datadog Agent
+  datadog-agent:
+    image: gcr.io/datadoghq/agent:7
+    container_name: datadog-agent
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=datadoghq.com
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_CONTAINER_EXCLUDE=name:datadog-agent
+      - DD_APPSEC_ENABLED=true
+      - DD_IAST_ENABLED=true
+      - DD_APPSEC_SCA_ENABLED=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+    ports:
+      - "8126:8126"
+      - "8125:8125/udp"
+    networks:
+      - video-rental-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: video-rental-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/video-rental
+      - JWT_SECRET=a7ed710b0fd6824454232d38d366531c550417c15464259b65328e43637e4602dd7027bb7f571fb67cf6e1d9a1c3e1e77f5a0d059d19c74172ec6f655c86020a
+      - NODE_ENV=development
+      - APP_VERSION=1.0.0
+      - DD_AGENT_HOST=datadog-agent
+      - DD_TRACE_AGENT_PORT=8126
+      - DD_SERVICE=video-rental-api
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+      - DD_LOGS_INJECTION=true
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_PROFILING_ENABLED=true
+      - DD_APPSEC_ENABLED=true
+      - DD_IAST_ENABLED=true
+      - DD_APPSEC_SCA_ENABLED=true
+    depends_on:
+      - mongo
+      - datadog-agent
+    networks:
+      - video-rental-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: video-rental-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - video-rental-network
+
+networks:
+  video-rental-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

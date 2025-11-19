@@ -1,0 +1,79 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        JWT SECRET - HARDCODED CONFIGURATION                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Your JWT Secret (128 characters):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+a7ed710b0fd6824454232d38d366531c550417c15464259b65328e43637e4602dd7027bb7f571fb67cf6e1d9a1c3e1e77f5a0d059d19c74172ec6f655c86020a
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📍 WHERE IT'S CONFIGURED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ backend/.env (line 3)
+✓ backend/.env.example (line 3)
+✓ docker-compose.yml (line 51)
+✓ k8s/backend-deployment.yaml (line 28)
+
+
+🔐 WHAT IT DOES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SIGNS tokens when users login/register
+2. VERIFIES tokens when users make requests
+3. PROTECTS against token tampering
+4. ENSURES only valid tokens are accepted
+
+
+🎯 HOW TO USE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NO CONFIGURATION NEEDED! The JWT secret is already hardcoded everywhere.
+
+Just run:
+  docker-compose up -d
+
+Or for Kubernetes:
+  ./deploy-k8s.sh
+
+
+🧪 TEST IT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Register a user:
+   curl -X POST http://localhost:5000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username":"john","email":"john@test.com","password":"pass123"}'
+
+2. You'll get a JWT token back:
+   {
+     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   }
+
+3. Use the token to make authenticated requests:
+   curl http://localhost:5000/api/rentals/my-rentals \
+     -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+
+⚠️  SECURITY NOTE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ DEVELOPMENT: Hardcoded secrets are FINE for learning and local development
+✗ PRODUCTION: Never use hardcoded secrets in production!
+
+For production:
+  • Generate unique secret per environment
+  • Store in secret manager (AWS Secrets Manager, Vault, etc.)
+  • Rotate secrets periodically
+  • Never commit to git
+
+
+📚 MORE INFO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+See CONFIGURATION.md for detailed explanation of JWT authentication
+See QUICKSTART.md for deployment instructions
+

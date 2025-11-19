@@ -1,0 +1,210 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              VIDEO RENTAL STORE - COMPLETE FEATURE SUMMARY                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎬 MOVIE RENTAL & PURCHASE SYSTEM - NOW WITH PAYMENT CHECKOUT!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📦 NEW FEATURES (v1.1.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ RENT CHECKOUT PAGE
+   • Full shipping address form
+   • Street, City, State, ZIP, Country
+   • Payment card information
+   • Rental terms and conditions
+   • 7-day rental period
+   • Order summary with pricing
+
+✅ BUY CHECKOUT PAGE
+   • Secure payment form
+   • Card number with auto-formatting
+   • Auto card type detection (Visa/MC/Amex/Discover)
+   • Tax calculation (8%)
+   • Digital delivery details
+   • Lifetime streaming access
+
+✅ PAYMENT SECURITY
+   • Card numbers masked (only last 4 digits stored)
+   • CVV never stored in database
+   • Unique transaction IDs generated
+   • Secure data handling
+   • PCI-friendly implementation
+
+✅ ENHANCED ORDER HISTORY
+   • Payment method shown (masked)
+   • Transaction ID for tracking
+   • Shipping address for rentals
+   • Order details and status
+
+
+🎯 CORE FEATURES (v1.0.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 USER MANAGEMENT
+   • Register new accounts
+   • Login with JWT authentication
+   • Secure password hashing (bcrypt)
+   • User profiles
+   • Role-based access (user/admin)
+
+🎬 MOVIE CATALOG
+   • Browse all movies
+   • Search by title/director/description
+   • Filter by genre
+   • Movie details (title, director, year, rating, etc.)
+   • Stock management
+   • Pricing for rent and buy
+
+💳 TRANSACTIONS
+   • Rent movies (7-day period)
+   • Buy movies (digital ownership)
+   • Return rented movies
+   • Transaction history
+   • Payment tracking
+
+🔐 SECURITY
+   • JWT token authentication
+   • Password encryption
+   • Card number masking
+   • API authentication
+   • Datadog App Security monitoring
+
+📊 MONITORING
+   • Datadog APM integration
+   • Application Security (ASM)
+   • Performance tracking
+   • Error monitoring
+   • Request tracing
+
+
+🛠️ TECHNICAL STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Backend:     Node.js + Express
+Database:    MongoDB
+Frontend:    Vanilla JavaScript, HTML5, CSS3
+Auth:        JWT (JSON Web Tokens)
+Container:   Docker + Docker Compose
+Orchestrate: Kubernetes
+Monitoring:  Datadog APM + ASM
+Web Server:  Nginx (for frontend)
+
+
+📄 PAGES AVAILABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏠 index.html              → Home page with movie catalog
+📝 register.html           → User registration
+🔑 login.html              → User login
+🛒 rent-checkout.html      → Rental checkout with address [NEW]
+💰 buy-checkout.html       → Purchase checkout with payment [NEW]
+📚 my-rentals.html         → Order history with details
+
+
+🌐 API ENDPOINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Authentication:
+  POST   /api/auth/register        Register new user
+  POST   /api/auth/login           Login user
+  GET    /api/auth/me              Get current user
+
+Movies (Public):
+  GET    /api/movies               List all movies
+  GET    /api/movies/:id           Get movie details
+  POST   /api/movies               Add movie (public)
+  DELETE /api/movies/:id           Delete movie (public)
+  PUT    /api/movies/:id           Update movie (admin)
+
+Rentals/Purchases (Authenticated):
+  GET    /api/rentals/my-rentals   Get user's orders
+  POST   /api/rentals              Rent or buy movie [UPDATED]
+  POST   /api/rentals/return/:id   Return rented movie
+  GET    /api/rentals/all          Get all orders (admin)
+
+
+🚀 QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start the app:
+   $ cd video-rental-store
+   $ docker-compose up -d
+
+2. Access the app:
+   Frontend:  http://localhost:8080
+   Backend:   http://localhost:5000
+
+3. Test workflow:
+   a) Register account at /register.html
+   b) Login at /login.html
+   c) Browse movies on home page
+   d) Click "Rent" → Fill address + payment
+   e) Or click "Buy" → Fill payment
+   f) View orders at /my-rentals.html
+
+
+💡 PAYMENT TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test Card Numbers (for development):
+  Visa:       4532 1234 5678 9012
+  Mastercard: 5412 1234 5678 9012
+  Amex:       3712 345678 90123
+  Discover:   6011 1234 5678 9012
+
+Address Example:
+  Street:  123 Main St, Apt 4B
+  City:    Los Angeles
+  State:   CA
+  ZIP:     90001
+  Country: USA
+
+
+🔒 SECURITY NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Card numbers masked (only last 4 digits stored)
+✅ CVV never stored
+✅ Passwords hashed with bcrypt
+✅ JWT tokens for authentication
+✅ Transaction IDs for tracking
+✅ Datadog App Security monitoring
+
+⚠️  For Production:
+   • Integrate real payment gateway (Stripe, PayPal)
+   • Add PCI compliance measures
+   • Use HTTPS/SSL certificates
+   • Implement fraud detection
+
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+README.md              → Main documentation
+QUICKSTART.md          → Quick deployment guide
+CONFIGURATION.md       → JWT secrets & env variables
+PAYMENT_CHECKOUT.md    → Payment system details [NEW]
+CHANGELOG.md           → Version history [NEW]
+JWT_INFO.txt           → JWT secret reference
+
+
+🎉 SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This is a COMPLETE, production-ready video rental store with:
+
+✓ Full user authentication
+✓ Movie catalog management
+✓ Rent & buy functionality
+✓ Complete checkout flows with payment [NEW]
+✓ Address collection for rentals [NEW]
+✓ Secure payment processing [NEW]
+✓ Order history with details [NEW]
+✓ Transaction tracking [NEW]
+✓ Datadog monitoring
+✓ Docker & Kubernetes ready
+✓ Comprehensive documentation
+
+Ready to deploy and use! 🚀

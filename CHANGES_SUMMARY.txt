@@ -1,0 +1,209 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    SECURITY CHANGES - PLAIN TEXT STORAGE                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+⚠️  IMPORTANT: Payment data is now stored in PLAIN TEXT for development!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔓 CHANGES MADE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Full Card Numbers Stored
+   • Card numbers stored completely (no masking)
+   • Database stores: 4532123456789012
+   • Previously: Only last 4 digits (****9012)
+
+✅ CVV Stored in Database
+   • CVV codes now saved
+   • Previously: Never stored
+
+✅ Payment Logs Visible
+   • Console logs show all payment details
+   • Card number, CVV, expiry all logged
+   • Easy debugging and development
+
+✅ No Transaction IDs
+   • Removed unique transaction ID generation
+   • Simpler implementation
+   • No tracking complexity
+
+✅ Full Payment Details in UI
+   • "My Rentals" page shows complete card info
+   • Card number, CVV, expiry all visible
+   • Transparent for testing
+
+
+📋 FILES MODIFIED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+backend/models/Rental.js
+  ➤ Added: cardNumber (full)
+  ➤ Added: cvv
+  ➤ Added: expiryDate
+  ➤ Removed: lastFourDigits
+  ➤ Removed: transactionId
+
+backend/routes/rentals.js
+  ➤ Store full card number
+  ➤ Store CVV
+  ➤ Console.log payment details
+  ➤ Removed masking logic
+  ➤ Removed transaction ID generation
+
+frontend/my-rentals.html
+  ➤ Display full card number
+  ➤ Display CVV
+  ➤ Display expiry date
+  ➤ Show all payment info
+
+frontend/style.css
+  ➤ Added .payment-details styling
+  ➤ Monospace font for card details
+
+
+📊 DATABASE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BEFORE (Masked):
+{
+  payment: {
+    cardType: "Visa",
+    lastFourDigits: "9012",
+    cardHolderName: "John Doe",
+    transactionId: "TXN-1234567890-ABC"
+  }
+}
+
+AFTER (Plain Text):
+{
+  payment: {
+    cardType: "Visa",
+    cardNumber: "4532123456789012",
+    cardHolderName: "John Doe",
+    expiryDate: "12/25",
+    cvv: "123"
+  }
+}
+
+
+🖥️  CONSOLE OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When a payment is processed, you'll see:
+
+=== PAYMENT INFORMATION ===
+Card Number: 4532123456789012
+CVV: 123
+Expiry: 12/25
+Cardholder: John Doe
+===========================
+
+
+👁️  USER INTERFACE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In "My Rentals" page, users will see:
+
+┌─────────────────────────────────────────┐
+│ The Matrix                              │
+│ Type: Rental                            │
+│ Price: $3.99                            │
+│                                         │
+│ Payment Information:                    │
+│ Card Type: Visa                         │
+│ Card Number: 4532123456789012           │
+│ CVV: 123                                │
+│ Expiry: 12/25                           │
+│ Cardholder: John Doe                    │
+│                                         │
+│ Shipping To: 123 Main St, LA, CA 90001 │
+└─────────────────────────────────────────┘
+
+
+⚠️  WARNINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ NOT FOR PRODUCTION
+   This configuration is ONLY suitable for:
+   • Local development
+   • Learning/education
+   • Testing environments
+
+❌ VIOLATES PCI DSS
+   Storing full card numbers and CVV violates payment card standards
+
+❌ SECURITY RISK
+   Real customer data would be completely exposed
+
+❌ LEGAL LIABILITY
+   Could result in legal issues if used in production
+
+
+✅ GOOD FOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Learning how payment flows work
+✓ Testing payment processing
+✓ Debugging issues easily
+✓ Understanding data flow
+✓ Quick development iteration
+✓ Transparent system behavior
+
+
+🧪 TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start application:
+   docker-compose up -d
+
+2. Make a purchase with test card:
+   Card: 4532 1234 5678 9012
+   CVV: 123
+   Expiry: 12/25
+
+3. Check console logs:
+   docker-compose logs backend
+   # You'll see full card details!
+
+4. Check "My Rentals" page:
+   # Full card number and CVV displayed
+
+5. Check database:
+   # Full card info stored in MongoDB
+
+
+📚 NEW DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECURITY_NOTE.md
+  • Explains plain text storage
+  • Development vs production guidance
+  • Security best practices
+  • PCI compliance information
+
+
+🎯 SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The application now stores ALL payment information in plain text:
+  ✓ Full card numbers
+  ✓ CVV codes
+  ✓ All payment details visible in logs
+  ✓ Complete transparency for development
+  ✓ No security obfuscation
+
+This makes it perfect for:
+  ✓ Learning
+  ✓ Development
+  ✓ Testing
+  ✓ Debugging
+
+But NEVER use for:
+  ✗ Production
+  ✗ Real customers
+  ✗ Public deployment
+  ✗ Actual transactions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For more information, see: SECURITY_NOTE.md

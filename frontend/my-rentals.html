@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Rentals - Video Rental Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1><a href="index.html">Video Rental Store</a></h1>
+            <div id="userNav">
+                <span id="usernameDisplay"></span>
+                <a href="my-rentals.html">My Rentals</a>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>My Rentals and Purchases</h2>
+        <div id="rentalsList"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        checkAuth();
+
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadRentals() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/api/rentals/my-rentals`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayRentals(data.rentals);
+                } else {
+                    document.getElementById('rentalsList').innerHTML = '<p class="error">Error loading rentals</p>';
+                }
+            } catch (error) {
+                document.getElementById('rentalsList').innerHTML = '<p class="error">Error connecting to server</p>';
+            }
+        }
+
+        function displayRentals(rentals) {
+            const container = document.getElementById('rentalsList');
+
+            if (rentals.length === 0) {
+                container.innerHTML = '<p>You have no rentals or purchases yet.</p>';
+                return;
+            }
+
+            container.innerHTML = rentals.map(rental => `
+                <div class="rental-card">
+                    <h3>${rental.movie.title}</h3>
+                    <p><strong>Type:</strong> ${rental.type === 'rent' ? 'Rental' : 'Purchase'}</p>
+                    <p><strong>Price:</strong> $${rental.price.toFixed(2)}</p>
+                    <p><strong>Date:</strong> ${new Date(rental.rentalDate).toLocaleDateString()}</p>
+
+                    ${rental.payment ? `
+                        <div class="payment-details">
+                            <p><strong>Payment Information:</strong></p>
+                            <p><strong>Card Type:</strong> ${rental.payment.cardType}</p>
+                            <p><strong>Card Number:</strong> ${rental.payment.cardNumber}</p>
+                            <p><strong>CVV:</strong> ${rental.payment.cvv}</p>
+                            <p><strong>Expiry:</strong> ${rental.payment.expiryDate}</p>
+                            <p><strong>Cardholder:</strong> ${rental.payment.cardHolderName}</p>
+                        </div>
+                    ` : ''}
+
+                    ${rental.type === 'rent' ? `
+                        <p><strong>Return Date:</strong> ${new Date(rental.returnDate).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> ${rental.returned ? 'Returned' : 'Active'}</p>
+                        ${rental.shippingAddress ? `
+                            <p><strong>Shipping To:</strong> ${rental.shippingAddress.street}, ${rental.shippingAddress.city}, ${rental.shippingAddress.state} ${rental.shippingAddress.zipCode}</p>
+                        ` : ''}
+                        ${!rental.returned ? `<button onclick="returnMovie('${rental._id}')">Return Movie</button>` : ''}
+                    ` : '<p><strong>Status:</strong> Owned - Available in your digital library</p>'}
+                </div>
+            `).join('');
+        }
+
+        async function returnMovie(rentalId) {
+            const token = localStorage.getItem('token');
+
+            if (!confirm('Are you sure you want to return this movie?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/rentals/return/${rentalId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Movie returned successfully!');
+                    loadRentals();
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            } catch (error) {
+                alert('Error connecting to server');
+            }
+        }
+
+        loadRentals();
+    </script>
+</body>
+</html>
